@@ -199,3 +199,20 @@ And for the C3 board:
 If you look at [`led-and-button-c3.py`](led-and-button-c3.py), you'll see `BUTTON_PIN = 9` - the `BOOT` button on the board is connected to pin 9 and once the board has started, the `BOOT` button can be used as a normal button (it only does something special if held down while the board is starting up).
 
 So, if `led-and-button-c3.py` is running and you're connected to the board, it'll print out the current value (1 or 0) of the `BOOT` button each time you press or release it.
+
+Client and server
+-----------------
+
+Server:
+
+```
+$ classic='connect port:/dev/ch340-usb-serial'
+$ mpremote $classic cp server-classic.py :main.py + reset + repl
+```
+
+Client:
+
+```
+$ c3='connect /dev/esp-usb-serial'
+$ mpremote $c3 cp client-c3.py :main.py + reset + repl
+```
