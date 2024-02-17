@@ -53,24 +53,14 @@ buffer = memoryview(bytearray(1024))
 import select
 import sys
 
-poller = select.poll()
-poller.register(cl, select.POLLIN | select.POLLERR | select.POLLHUP)
-
-# TODO: is the poller worth it - just do a hard loop of non-blocking reads.
 # TODO: maybe toggle LED on every successful write - does it flicker or just look dim?
 while True:
-    # TODO: `s` clashes with `s` above.
-    for (s, event) in poller.ipoll(0):
-        if event != select.POLLIN:
-            # TODO: raise exception.
-            print(f"got unexprected event {event}")
-        elif s != cl:
-            # TODO: raise exception.
-            print(f"got unexprected object {s}")
-        else:
-            count = cl.readinto(buffer)
-            if count is not None:
-                print(".", end="")
+    before = time.ticks_us()
+    count = cl.readinto(buffer)
+    after = time.ticks_us()
+    delta = time.ticks_diff(after, before)
+    print(delta, count)
+    #print(".", end="")
     if button.value() != button_default_value:
         # TODO: restore UART (only server side needs this - ensure works as expected for both classic and C3 USB setups).
         sys.exit()

@@ -216,3 +216,42 @@ Client:
 $ c3='connect /dev/esp-usb-serial'
 $ mpremote $c3 cp client-c3.py :main.py + reset + repl
 ```
+
+ESP classic read speed
+----------------------
+
+The `cl.readinto` operation (where `cl` is the first element of the tuple returned by the socket `accept` call) is quite slow - reading 1024 bytes takes between 1.8 and 2.2ms. Trying to read when there's nothing there takes 0.6ms.
+
+If you can handle 8 * 1024 bits per 2.2ms that's still a respectable 3.7m baud. However, our application has to do various other things in addition to just reading.
+
+Theoretical maximum baud rate
+-----------------------------
+
+ArduPilot notes 921600 as a reliable upper limit for STM32 boards - see [`AP_SerialManager.cpp:724`](https://github.com/ArduPilot/ardupilot/blob/2cb177e/libraries/AP_SerialManager/AP_SerialManager.cpp#L724).
+
+For comparison, Betaflight doesn't support above 115200 for GPS or telemetry (see [`ports.js:70`](https://github.com/betaflight/betaflight-configurator/blob/40c243f/src/js/tabs/ports.js#L70) in the Betaflight Configurator) but does support up to 1,000,000 baud for MSP and 2,470,000 for the blackbox,
+
+Select.poll
+-----------
+
+At the moment I'm unconvinced there's anything to be gained wusing the `select.poll` vs just a hard loop of non-blocking reads.
+
+For reference, here's the initial `poll` implementation that I was using:
+
+```
+poller = select.poll()
+poller.register(cl, select.POLLIN | select.POLLERR | select.POLLHUP)
+
+while True:
+    for (s, event) in poller.ipoll(0):
+        if event != select.POLLIN:
+            # TODO: raise exception.
+            print(f"got unexprected event {event}")
+        elif s != cl:
+            # TODO: raise exception.
+            print(f"got unexprected object {s}")
+        else:
+            count = cl.readinto(buffer)
+            if count is not None:
+                print(count)
+```
