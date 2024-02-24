@@ -266,3 +266,64 @@ while True:
             if count is not None:
                 print(count)
 ```
+
+Effective speed
+---------------
+
+Maximum speeds reading and echoing back data.
+
+UART0 over USB:
+
+* C3: ~300 kbps (with baud rate set to 460,800)
+* Classic (with CH340K serial-to-USB chip): ~114 kbps (with baud rate set to 115,200) 
+
+UART1 via CP2102N:
+
+* C3: ~1.75 mbps (with baud rate set to 1,843,200)
+* Classic: ditto
+
+Reading a byte at a time
+------------------------
+
+Reading and writing via a `machine.UART` instance, where non-blocking reads of as many bytes as are currently available in a single `readinto` call, is extremely efficient and one can effectively consume all available bandwidth up to 1,843,200 baud (which is effectively the top speed of my CP2102N based [serial to USB converter](https://www.adafruit.com/product/5335)).
+
+But with UART0, one has to work through the blocking `sys.stdin` and this forces us into polling and reading at most one byte at a time. On a C3, a hard poll-read-write loop of a byte-at-a-time maxes out ~300kbps.
+
+It's the performance of this loop rather than the underlying read and write operations that becomes the limiting factor.
+
+The MicroPython documentation contains a [maximizing speed](https://docs.micropython.org/en/latest/reference/speed_python.html) page.
+
+I tried all the suggestions - things like caching object references didn't noticeably affect speed (maybe the interpreter has been improved since this page was written) and the most interesting looking thing, the `@micropython.viper` decorator, isn't supported for C3 - as of Feb 24th, 2024, [`ports/esp32/mpconfigport.h`](https://github.com/micropython/micropython/blob/master/ports/esp32/mpconfigport.h) only supports emitting machine instructions for the Xtensa ESP32 chips:
+
+```
+#if !CONFIG_IDF_TARGET_ESP32C3
+#define MICROPY_EMIT_XTENSAWIN              (1)
+#endif
+```
+
+Surprisingly, the biggest gain was achieved on the basis of the advice in the [_Variables_ section](https://docs.micropython.org/en/latest/develop/optimizations.html#variables) of the _Optimizations_ page. In my tests, I'd created various variables in the global scope. Simply shifting everything into a function and calling that increased the effective throughput from ~200kbps to ~300kbps.
+
+I.e. I started with variables like `poller` existing in the global scope:
+
+```
+poller = select.poll()
+
+while True:
+    for _, event in poller.ipoll():
+        ...
+```
+
+Simply moving things into a function greatly increases performance:
+
+```
+def run()
+    poller = select.poll()
+
+    while True:
+        for _, event in poller.ipoll():
+            ...
+            
+run()
+```
+
+I suspect that a better approach than optimization like this would be an update to MicroPython to enable non-blocking reads on `sys.stdin` so that `readinto` can be used to read more than a single byte as one is currently constrained to do.

@@ -111,6 +111,7 @@ class ReadStats:
             min_latency = TimeDelta.to_str(self._latencies[0])
             max_latency = TimeDelta.to_str(self._latencies[-1])
             median_latency = TimeDelta.to_str(statistics.median(self._latencies))
+            logger.print_line(f'Blocks received: {block_count}')
             logger.print_line(f'Latencies: min={min_latency}, median={median_latency}, max={max_latency}')
 
             logger.print_line(f'Bad CRCs: {self._bad_crc_count}')

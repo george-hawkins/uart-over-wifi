@@ -30,7 +30,7 @@ class UsbUart0:
             repeat = False
             for uart_input, event in self._poller.ipoll(0):
                 if event != select.POLLIN:
-                    raise RuntimeError(f"unexpected ipoll event {event}")
+                    raise RuntimeError(f"unexpected poll event {event}")
                 else:
                     read_count = uart_input.readinto(read_byte)
                     if read_count == 1:
