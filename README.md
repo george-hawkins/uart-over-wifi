@@ -88,26 +88,6 @@ $ pip install micropython-esp32-stubs
 
 For more information, see the MicroPython Stubs [documentation](https://micropython-stubs.readthedocs.io/en/main/24_pycharm.html).
 
-**TODO:** as that documentation notes, if I had a `requirements.txt` file at the root of this project, PyCharm would automatically offer to install the listed packages.
-
-This pip [documentation](https://pip.pypa.io/en/stable/reference/requirements-file-format/) says you can just list packages without specifying version globs.
-
-So, I could just specify:
-
-```
-esptool
-mpremote
-micropython-esp32-stubs
-```
-
-I don't know that `esp-idf-monitor` offers anything useful over `mpremote`.
-
-If you don't want to let PyCharm set things up, you can (after having created the `venv`), just get pip to install the `requirements.txt` packages:
-
-```
-$ pip install -r requirements.txt
-```
-
 Mpremote
 --------
 
