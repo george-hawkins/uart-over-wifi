@@ -193,15 +193,15 @@ Instead of using shortcuts, I just used shell variables like so and associated a
 (env) $ c3='connect /dev/esp-usb-serial'
 ```
 
-Then I created [`dev/led-and-button.py`](dev/led-and-button.py) and could copy it to the appropriate board, reset the board and connect to its REPL all in one go like so for the C3 board:
+Then I created [`dev/led_and_button.py`](dev/led_and_button.py) and could copy it to the appropriate board, reset the board and connect to its REPL all in one go like so for the C3 board:
 
 ```
-(env) $ mpremote $c3 cp led-and-button.py :main.py + reset + repl
+(env) $ mpremote $c3 cp led_and_button.py :main.py + reset + repl
 ```
 
-If you look at [`led-and-button.py`](dev/led-and-button.py), you'll see `BUTTON_PIN = 9` - the `BOOT` button on the board is connected to pin 9 and once the board has started, the `BOOT` button can be used as a normal button (it only does something special if held down while the board is starting up).
+If you look at [`led_and_button.py`](dev/led_and_button.py), you'll see `BUTTON_PIN = 9` - the `BOOT` button on the board is connected to pin 9 and once the board has started, the `BOOT` button can be used as a normal button (it only does something special if held down while the board is starting up).
 
-So, if `led-and-button.py` is running, and you're connected to the board, it'll print out the current value (1 or 0) of the `BOOT` button each time you press or release it.
+So, if `led_and_button.py` is running, and you're connected to the board, it'll print out the current value (1 or 0) of the `BOOT` button each time you press or release it.
 
 Client and server
 -----------------
@@ -354,13 +354,21 @@ So, below wherever you see `$esp32c3` take it as having been set up to expand to
 
 #### LED and button
 
-The [`dev/led-and-button.py`](dev/led-and-button.py) script demos using the board's LED and BOOT button. This is useful if you need some simple input and output. The pin values in the script work on both my WeAct C3 board and my no-name Super Mini C3 board.
+The [`dev/led_and_button.py`](dev/led_and_button.py) script demos using the board's LED and BOOT button. This is useful if you need some simple input and output. The pin values in the script work on both my WeAct C3 board and my no-name Super Mini C3 board.
 
 ```
-$ mpremote $esp32c3 cp led-and-button.py :main.py + reset + repl
+$ mpremote $esp32c3 cp led_and_button.py :main.py + reset + repl
 ```
 
 The LED will blink on and off and if you press the BOOT button, you'll see 1 or 0 being output.
+
+The [`dev/led_interrupt.py`](dev/led_interrupt.py) script demos using a timer to blink the LED while the MCU is doing something else:
+
+```
+$ mpremote $esp32c3 cp led_interrupt.py :main.py + reset
+```
+
+The LED blinks even while the device is sleeping.
 
 ### Serial tester
 
