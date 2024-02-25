@@ -10,7 +10,7 @@ CRC_BYTE_COUNT = 4
 
 BLOCK_SIZE = 128
 
-FILLER_BYTE = 0x23  # The '#` character.
+FILLER_BYTE = 0x23  # The '#' character.
 FILLER_BYTE_COUNT = BLOCK_SIZE - (1 + TIMESTAMP_BYTE_COUNT + CRC_BYTE_COUNT)  # Additional 1 is the STX byte.
 
 STX = 0x02

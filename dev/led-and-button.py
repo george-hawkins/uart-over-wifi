@@ -1,10 +1,10 @@
 from machine import Pin
 import time
 
-LED_PIN = 22
-BUTTON_PIN = 0
+LED_PIN = 8
+BUTTON_PIN = 9
 
-BUTTON_MILLIS = 200
+LED_MILLIS = 200
 
 led = Pin(LED_PIN, Pin.OUT)
 led_value = 0
@@ -16,7 +16,7 @@ button_value = button.value()
 while True:
     now = time.ticks_ms()
     delta = time.ticks_diff(now, led_toggle_time)
-    if delta >= BUTTON_MILLIS:
+    if delta >= LED_MILLIS:
         led_toggle_time = now
         led.value(led_value)
         led_value = led_value ^ 1
