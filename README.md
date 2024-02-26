@@ -210,15 +210,24 @@ Server:
 
 ```
 $ classic='connect port:/dev/ch340-usb-serial'
-$ mpremote $classic cp server-classic.py :main.py + reset + repl
+$ mpremote $classic cp server.py :main.py + reset + repl
 ```
 
 Client:
 
 ```
 $ c3='connect /dev/esp-usb-serial'
-$ mpremote $c3 cp client-c3.py :main.py + reset + repl
+$ mpremote $c3 cp client.py :main.py + reset + repl
 ```
+
+SSID and passphrase
+-------------------
+
+Using just the 26 letters and the 10 digits, you can create base 36 values.
+
+You need a 25 digit base 36 value to encode a UUID.
+
+Generate ten of these with [random.org](https://www.random.org/strings/?num=10&len=25&digits=on&loweralpha=on&unique=on&format=html&rnd=new) and choose any two, one as the SSID and one as the passphrase, and update the `SSID` and `PASSPHRASE` values in both [`server.py`](server.py) and [`client.py`](client.py).
 
 ESP classic read speed
 ----------------------
@@ -346,8 +355,8 @@ As I often work with multiple boards, I generally create shell variables to let 
 ```
 $ client='connect /dev/ttyACM0'
 $ server='connect /dev/ttyACM1'
+$ mpremote $server cp server.py :main.py + reset
 $ mpremote $client cp client.py :main.py + reset
-$ mpremote $server cp client.py :main.py + reset
 ```
 
 So, below wherever you see `$esp32c3` take it as having been set up to expand to `connect /dev/ttyACM0` (or whatever port the board is connected to).

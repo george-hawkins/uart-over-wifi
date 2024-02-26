@@ -28,6 +28,19 @@ SUBSYSTEM=="tty", ATTRS{idVendor}=="303a", ATTRS{idProduct}=="1001", \
 ATTRS{idVendor}=="303a", ATTRS{idProduct}=="1001", ENV{MTP_NO_PROBE}="1"
 ```
 
+### Multiple devices
+
+If you change the `SYMLINK` rule to:
+
+```
+SUBSYSTEM=="tty", ATTRS{idVendor}=="303a", ATTRS{idProduct}=="1001", \
+    SYMLINK+="esp-usb-serial esp-usb-serial%n", MODE="0666"
+                             ^^^^^^^^^^^^^^^^
+```
+
+Then, if multiple devices are connected, each one gets a unique name with a number at the end, e.g. `esp-usb-serial0`, and the last one connected gets the name `esp-usb-serial` (taking it from any previous device with the same `ATTRS`).
+
+
 ESP32 Core
 ----------
 
