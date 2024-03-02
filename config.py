@@ -1,4 +1,4 @@
-BAUD_RATE = 57600
+BAUD_RATE = 230400
 
 RX_PIN = 20
 TX_PIN = 21
@@ -9,3 +9,6 @@ PASSPHRASE = "r9x08zf5dsk3qu66abp7mgbtu"
 # ----------------------------------------------------------------------
 
 DEV_MODE = True
+
+# S and C series, e.g. S3 and C3, have native USB support, the original ESP32 does not.
+NATIVE_USB = False

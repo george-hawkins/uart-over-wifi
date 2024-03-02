@@ -1,10 +1,22 @@
 import select
 import sys
+import time
 
 import micropython
 from machine import UART
 
-BAUD_RATE = 460800
+# https://docs.espressif.com/projects/esp-faq/en/latest/software-framework/peripherals/usb.html#why-does-esp32-s2-esp32-s3-not-reach-the-maximum-usb-full-speed-12-mbps
+# So, 7372800 would be above the actual limit but below the theoretical one.
+# If I take the breaks off on the serial-tester will it limit itself to not sending faster than 115kbps?
+# NO!!! But maybe one could achieve that effect my throttling ones reads from the host.
+BAUD_RATE = 115200
+
+
+# Give myself a chance to bail and upload a new program.
+print('Press ctrl-C now to exit')
+time.sleep(3)
+print("Taking control of the USB UART")
+time.sleep_ms(200)
 
 
 def run():

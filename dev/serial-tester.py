@@ -26,7 +26,9 @@ EFFICIENCY = 0.8
 # 100us but non-blocking reads, for some reason, take more than 10ms every so often (even when
 # there's nothing to read).
 # If a write or read operation goes above the limits here log a (mild) warning.
-SLOW_OP_NS = 10 ** 7
+SLOW_OP_NS = 2 * 10 ** 7
+
+NO_READ_WARNING_S = 4
 
 
 class BasicLogger:
@@ -34,7 +36,7 @@ class BasicLogger:
         self._need_newline = False
 
     def print_char(self, c):
-        print(c, end='')
+        print(c, end='', flush=True)
         self._need_newline = True
 
     def print_line(self, line):
@@ -139,6 +141,10 @@ class Reader:
         self._crc_offset = 0
 
     def consume(self, b):
+        if 0x20 <= b <= 0x7e:
+            print(chr(b), end='', flush=True)
+        else:
+            print('.', end='', flush=True)
         if not self._started:
             if b == STX:
                 self._started = True
@@ -166,6 +172,7 @@ class Reader:
                 else:
                     self._stats.inc_bad_crc_count()
                 self._reset()
+                print()
 
 
 def time_ns(action):
@@ -191,7 +198,11 @@ class SerialTester:
         try:
             reader = Reader(self._baud_rate)
             send_time_ns = ((BLOCK_SIZE * 8 * 10 ** 9) / EFFICIENCY) / self._baud_rate
+            send_time_ns *= 2
+            send_time_ns = 0
             next_ns = 0
+            last_read = time.perf_counter()
+            no_read_factor = 1
 
             while True:
                 now_ns = time.perf_counter_ns()
@@ -203,8 +214,16 @@ class SerialTester:
                 diff_ns, block = time_ns(lambda: self._serial.read(BLOCK_SIZE))
                 if diff_ns > SLOW_OP_NS:
                     logger.print_line(f'Read blocked for {TimeDelta.to_str(diff_ns)}')
-                for b in block:
-                    reader.consume(b)
+                if len(block) > 0:
+                    last_read = time.perf_counter()
+                    no_read_factor = 1
+                    for b in block:
+                        reader.consume(b)
+                else:
+                    diff = time.perf_counter() - last_read
+                    if diff > (NO_READ_WARNING_S * no_read_factor):
+                        logger.print_line(f'No bytes received in the last {int(diff)} seconds')
+                        no_read_factor += 1
         except Exception as e:
             self._serial.close()
             raise e

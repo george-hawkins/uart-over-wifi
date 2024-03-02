@@ -5,6 +5,7 @@ def connect(host, port):
     socket_address = socket.getaddrinfo(host, port, 0, socket.SOCK_STREAM)[0][-1]
 
     sock = socket.socket()
+    # I've seen connect fail with `OSError: [Errno 104] ECONNRESET` so, make sure to call in try: reset setup.
     sock.connect(socket_address)
     sock.setblocking(False)  # The default is blocking.
 

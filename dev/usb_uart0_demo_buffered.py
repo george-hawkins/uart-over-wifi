@@ -1,5 +1,6 @@
 import select
 import sys
+import time
 
 import micropython
 from machine import UART
@@ -8,6 +9,13 @@ from micropython import const
 BAUD_RATE = 230400
 
 BUFFER_SIZE = const(2048)
+
+
+# Give myself a chance to bail and upload a new program.
+print('Press ctrl-C now to exit')
+time.sleep(3)
+print("Taking control of the USB UART")
+time.sleep_ms(200)
 
 
 def run():
