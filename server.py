@@ -37,7 +37,7 @@ class Runner:
 
         # buffer = create_memory_buffer()
 
-        buffer_len = 1024
+        buffer_len = 8
         buffer = memoryview(bytearray(buffer_len))
 
         # byte_buffer = bytearray(1)
@@ -57,7 +57,6 @@ class Runner:
                 self.offset = next_offset
                 self.balance -= 1
                 if self.offset == buffer_len:
-                    break
                     count = 0
                     while count < self.offset:
                         result = uart0_write(buffer[count:])
@@ -93,7 +92,8 @@ class Runner:
                 if read_count is None:
                     raise RuntimeError(f"unexpect None")
                 if read_count == 0:
-                    raise RuntimeError(f"failed to read any bytes")
+                    raise RuntimeError("failed to read any bytes")
+                raise RuntimeError("unexpected read")
                 self.balance += read_count
                 write_count = uart0_write(buffer[:read_count])
                 if write_count != read_count:
@@ -112,7 +112,7 @@ class Runner:
             #if self.balance >= 0:
                 copy_to_socket()
             #if self.balance <= 0:
-                copy_to_uart()
+                #copy_to_uart()
 
     def run(self):
         wifi.create_ap(config.SSID, config.PASSPHRASE)

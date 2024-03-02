@@ -141,10 +141,6 @@ class Reader:
         self._crc_offset = 0
 
     def consume(self, b):
-        if 0x20 <= b <= 0x7e:
-            print(chr(b), end='', flush=True)
-        else:
-            print('.', end='', flush=True)
         if not self._started:
             if b == STX:
                 self._started = True
@@ -172,7 +168,6 @@ class Reader:
                 else:
                     self._stats.inc_bad_crc_count()
                 self._reset()
-                print()
 
 
 def time_ns(action):
@@ -198,7 +193,7 @@ class SerialTester:
         try:
             reader = Reader(self._baud_rate)
             send_time_ns = ((BLOCK_SIZE * 8 * 10 ** 9) / EFFICIENCY) / self._baud_rate
-            send_time_ns *= 2
+            # send_time_ns *= 2
             send_time_ns = 0
             next_ns = 0
             last_read = time.perf_counter()

@@ -39,7 +39,7 @@ def reset(e: Exception):
         failure = e  # See above for how to print from REPL.
         uart0.reset_baud_rate()
         micropython.kbd_intr(0x03)  # Restore ctrl-C behavior (only actually disabled by side using USB).
-        sys.exit(1)
+        raise e
     else:
         machine.reset()
 
