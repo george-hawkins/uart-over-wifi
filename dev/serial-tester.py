@@ -193,8 +193,6 @@ class SerialTester:
         try:
             reader = Reader(self._baud_rate)
             send_time_ns = ((BLOCK_SIZE * 8 * 10 ** 9) / EFFICIENCY) / self._baud_rate
-            # send_time_ns *= 2
-            send_time_ns = 0
             next_ns = 0
             last_read = time.perf_counter()
             no_read_factor = 1
@@ -203,8 +201,8 @@ class SerialTester:
                 now_ns = time.perf_counter_ns()
                 if now_ns > next_ns:
                     diff_ns, _ = time_ns(lambda: self.write_block(now_ns))
-                    if diff_ns > SLOW_OP_NS:
-                        logger.print_line(f'Write blocked for {TimeDelta.to_str(diff_ns)}')
+                    # if diff_ns > SLOW_OP_NS:
+                    #     logger.print_line(f'Write blocked for {TimeDelta.to_str(diff_ns)}')
                     next_ns = time.perf_counter_ns() + send_time_ns
                 diff_ns, block = time_ns(lambda: self._serial.read(BLOCK_SIZE))
                 if diff_ns > SLOW_OP_NS:

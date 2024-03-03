@@ -31,21 +31,17 @@ def run():
     poller = select.poll()
     poller.register(uart_input, select.POLLIN)
 
-    end_count = BAUD_RATE
-    count = 0
-
     failure = None
 
     try:
         read = uart_input.readinto
         write = uart_output.write
-        while count < end_count:
+        while True:
             offset = 0
             # Reading bytes into a larger buffer first didn't improve performance.
-            for _, event in poller.ipoll():
+            for _, _ in poller.ipoll():
                 next_offset = offset + 1
                 read(buffer[offset:next_offset])
-                count += 1
                 offset = next_offset
                 if offset == BUFFER_SIZE:
                     break
