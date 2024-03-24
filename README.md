@@ -4,8 +4,8 @@
 
 <img width="482" height="160" src="logo/martina-final.svg">
 
-UART over WiFi
-==============
+UART over Wi-Fi
+===============
 
 See [`udev-rules.md`](udev-rules.md) for `udev` rules for the WeAct Studio classic ESP32 and EP32-C3 Core boards.
 
