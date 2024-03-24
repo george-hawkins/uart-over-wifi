@@ -1,3 +1,9 @@
+<img width="822" height="256" src="logo/abhi-final.svg">
+
+<img width="781" height="256" src="logo/kevin-final.svg">
+
+<img width="771" height="256" src="logo/martina-final.svg">
+
 UART over WiFi
 ==============
 
