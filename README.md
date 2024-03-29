@@ -2,7 +2,7 @@
 
 <img width="488" height="160" src="logo/kevin-final.svg">
 
-<img width="482" height="160" src="logo/martina-final.svg">
+<img width="482" height="160" src="logo/kevin-final-mid-new-dupont.svg">
 
 UART over Wi-Fi
 ===============
