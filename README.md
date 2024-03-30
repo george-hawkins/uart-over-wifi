@@ -1,9 +1,83 @@
-<img width="514" height="160" src="logo/abhi-final.svg">
-
-<img width="492" height="160" src="logo/kevin-final.svg">
+<img width="492" height="160" src="images/logo.svg" alt="logo">
 
 UART over Wi-Fi
 ===============
+
+UART over Wi-Fi for less than US$10 without any configuration and without any dependency on an existing Wi-Fi network or smartphone hotspot with an easily achievable open-air range of X m.
+
+| Normal wired UART connection | The same connection but wireless |
+|------------------------------|----------------------------------|
+| ![wired-connection](images/wired-connection.jpg) | ![wireless-connection](images/wireless-connection.jpg) |
+
+TODO: include `wireless-connection.jpg` once you have USB-C power adapters. Use two of the Super Mini boards, a Dupont connector and the Pi Pico on a breadboard. And update `wired-connection.jpg` to match this setup (i.e. get rid of the Uno).
+
+There's no magic to this project, it just relies on the fact that you can now get incredibly cheap [ESP32](https://en.wikipedia.org/wiki/ESP32) based boards - combine two of them and they can create their own private Wi-Fi network, discover each other and then pass the UART data back and forward over Wi-Fi.
+
+---
+
+See the [`dev.md`](docs/dev.md) for development notes and [`notes.md`](docs/notes.md) for notes that didn't otherwise fit elsewhere.
+
+Boards
+------
+
+There are no end of small cheap ESP32 boards. I've used the C3 variant of the ESP32 almost exclusively and I suggest using an S3 or C3 board as the S and C range of chips have builtin USB support (whereas the original ESP32 requires an external third-party USB-to-serial chip).
+
+You'll need two boards - one for each side of the UART connection. Here are the boards, I recommend:
+
+* [WeAct ESP32-C3 Core board](https://www.aliexpress.com/item/1005004960064227.html)
+* [Seeed Xiao ESP32-C3 board](https://www.seeedstudio.com/Seeed-XIAO-ESP32C3-p-5431.html)
+* [Seeed Xiao ESP32-S3 board](https://www.seeedstudio.com/XIAO-ESP32S3-p-5627.html)
+* [Waveshare ESP32-C3 Mini board](https://www.waveshare.com/esp32-c3-zero.htm)
+* [Adafruit QT Py ESP32-C3 board](https://www.adafruit.com/product/5405)
+* [Sparkfun Pro Micro ESP32-C3 board](https://www.sparkfun.com/products/23484)
+
+The Seeed Xiao is the only one where I suggest an S3 board as an alternative to the C3 variant - the S3 and C3 boards are almost identical (other than the MCU) but the C3 is the only one of the above boards that does not a user controllable LED. This may seem a minor point but I find having a builtin LED can be very useful signalling the state of the board (e.g. flashing the LED while the board is going through the setup phase of establishing a connection).
+
+The Adafruit and Waveshare boards have a neo-pixel (a WS2812 on the Waveshare board and a WS2812B on the Adafruit board) while the others (except the Xiao C3) have a standard classic SMD LED.
+
+There are other nice mini boards but I've excluded boards, like the lovely [TinyS3](https://esp32s3.com/tinys3.html) because at US$20, they're significantly more expensive than the boards listed above. [Lilygo](https://www.lilygo.cc/collections/all) is another provider of cheap ESP32 boards - however, their boards tend to be combined with someother device (most commonly an LCD) and all their plain ESP32 boards seem to be a slightly larger form-factor than the ones listed above.
+
+There are no end of no-brand ESP32 boards on AliExpress. However, I suggest you get a board from a clear source like the ones above. There is one no-brand board that I will mention as it appears everywhere - the Super Mini. I've bought these from several different AliExpress stores and they seem to all work fine - for a small section about them and links to the stores, see [`notes.md`](docs/notes.md).
+
+### Antenna
+
+The Adafruit and Waveshare boards above come with a small ceramic chip antenna. The WeAct and Sparkfun boards come with an [inverted-F PCB antenna](https://en.wikipedia.org/wiki/Inverted-F_antenna).
+
+The Xiao boards are interesting in that they come with a u.FL antenna connector and a patch antenna. The patch antenna probably isn't significantly better than the other antenna types but the u.FL connector means you choose to use another antenna. Seeed sell a suitable larger [whip-style antenna](https://www.seeedstudio.com/2-4GHz-2-81dBi-Antenna-for-XIAO-ESP32C3-p-5475.html) and many other manufacturers sell antennas in all shapes and sizes for 2.4GHz Wi-Fi with a u.FL connector.
+
+Note: the u.FL connector is one of my least favorite connectors - it's very fiddly and, worse, it's extremely easy to tear these connectors off their boards when trying to remove an antenna (as unlike e.g. USB connectors, they have no through-hole element to anchor them solidly to the board). Seeed have a section on installing and removing such antennas [here](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/#installation-of-antenna) - they make it look easy, but that hasn't been my experience.
+
+### Power
+
+A significant downside to the Xiao boards is that if you intend to power them via the 5V pin then you need to wire in a diode between your 5V pin and this source (as described [here](https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/#power-pins).
+
+The Adafruit board has a similar issue but in this case, you can provide power via the battery pins on the back of the board (as described [here](https://learn.adafruit.com/adafruit-qt-py-esp32-c3-wifi-dev-board?view=all#power-3112671)) which do have the relevant diode protection.
+
+I'm not sure why the battery pads on the Adafruit board have the diode and those on the Xiao boards do not (TODO: double check this). I _suspect_ that the downside of the diode on the Adafruit board is that a rechargeable lithium battery connected to these pins cannot be recharged via the board's USB port (no mention is made of charging in the Adafruit documentation), i.e. you'd have to disconnect the battery to recharge it with a separated device whereas you clearly can recharge such a battery via the the Xiao board's USB port (as described [here](https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/#battery-usage).
+
+A simple alternative that doesn't require worrying about diodes is to power the board via a simple 2-pin power-to-USB adapter.
+
+TODO: include picture of board powered in this way.
+
+TODO: confirm if the Waveshare, WeAct and Sparkfun boards have pins with the relevant diode:
+
+* [Waveshare schematic](https://files.waveshare.com/wiki/ESP32-C3-Zero/ESP32-C3-Zero-Sch.pdf).
+* [Sparkfun schematic](docs/sparkfun-dev-esp32-c3-mini-schematic.pdf) (produced with the [Altium viewer](https://www.altium.com/viewer/) from [`SparkFun_Pro_Micro.sch`](https://github.com/sparkfun/SparkFun_Pro_Micro-ESP32C3/blob/main/Hardware/SparkFun_Dev_ESP32_C3_MINI.sch)).
+* [WeAct schematic](https://github.com/WeActStudio/WeActStudio.ESP32C3CoreBoard/blob/master/Hardware/WeAct-ESP32C3CoreBoard_V10_SchDoc.pdf).
+
+TODO: I suspect it's simpler just to use USB power for every board rather than worrying about diode or no-diode.
+
+Alternatives
+------------
+
+TODO:
+
+* WeAct boards
+* 433 boards
+* Kickstarter board
+* Telemetry radios.
+
+---
 
 See [`udev-rules.md`](udev-rules.md) for `udev` rules for the WeAct Studio classic ESP32 and EP32-C3 Core boards.
 
