@@ -1,6 +1,6 @@
 <img width="514" height="160" src="logo/abhi-final.svg">
 
-<img width="488" height="160" src="logo/kevin-final.svg">
+<img width="492" height="160" src="logo/kevin-final.svg">
 
 UART over Wi-Fi
 ===============
