@@ -474,6 +474,10 @@ The start-stop nature of letting the system block you as you hit buffer limits r
 
 TODO: include photo of two CP2102N serial-to-USB converters connected to each other and plugging into a USB hub. Then explain that one can run two instances of `serial-tester.py`, one talking to each converter and demonstrate the simplest case of just pumping serial data between two USB ports on your desktop/laptop.
 
+| Serial-to-USB - TX connected to RX | Two Serial-to-USB converters |
+|------------------------------------|------------------------------|
+| ![serial-to-usb loopback](images/serial-to-usb-loopback.jpg) | ![two serial-to-usb adapters](images/two-serial-to-usb-adapters.jpg) |
+
 ### UART1 scripts
 
 | C3 and USB-to-serial converter                       | Close-up                                                               |
