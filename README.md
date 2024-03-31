@@ -3,7 +3,7 @@
 UART over Wi-Fi
 ===============
 
-UART over Wi-Fi for less than US$10 without any configuration and without any dependency on an existing Wi-Fi network or smartphone hotspot with an easily achievable open-air range of X m.
+UART over Wi-Fi for less than US$10 without any configuration and without any dependency on an existing Wi-Fi network or smartphone hotspot with an easily achievable open-air range of X m. That Wi-Fi is involved is invisible to _both_ ends of the connection.
 
 | Normal wired UART connection | The same connection but wireless |
 |------------------------------|----------------------------------|
@@ -29,7 +29,7 @@ You'll need two boards - one for each side of the UART connection. Here are the 
 * [Seeed Xiao ESP32-S3 board](https://www.seeedstudio.com/XIAO-ESP32S3-p-5627.html)
 * [Waveshare ESP32-C3 Mini board](https://www.waveshare.com/esp32-c3-zero.htm)
 * [Adafruit QT Py ESP32-C3 board](https://www.adafruit.com/product/5405)
-* [Sparkfun Pro Micro ESP32-C3 board](https://www.sparkfun.com/products/23484)
+* [SparkFun Pro Micro ESP32-C3 board](https://www.sparkfun.com/products/23484)
 
 The Seeed Xiao is the only one where I suggest an S3 board as an alternative to the C3 variant - the S3 and C3 boards are almost identical (other than the MCU) but the C3 is the only one of the above boards that does not a user controllable LED. This may seem a minor point but I find having a builtin LED can be very useful signalling the state of the board (e.g. flashing the LED while the board is going through the setup phase of establishing a connection).
 
@@ -41,31 +41,56 @@ There are no end of no-brand ESP32 boards on AliExpress. However, I suggest you 
 
 ### Antenna
 
-The Adafruit and Waveshare boards above come with a small ceramic chip antenna. The WeAct and Sparkfun boards come with an [inverted-F PCB antenna](https://en.wikipedia.org/wiki/Inverted-F_antenna).
+The Adafruit and Waveshare boards above come with a small ceramic chip antenna. The WeAct and SparkFun boards come with an [inverted-F PCB antenna](https://en.wikipedia.org/wiki/Inverted-F_antenna).
 
 The Xiao boards are interesting in that they come with a u.FL antenna connector and a patch antenna. The patch antenna probably isn't significantly better than the other antenna types but the u.FL connector means you choose to use another antenna. Seeed sell a suitable larger [whip-style antenna](https://www.seeedstudio.com/2-4GHz-2-81dBi-Antenna-for-XIAO-ESP32C3-p-5475.html) and many other manufacturers sell antennas in all shapes and sizes for 2.4GHz Wi-Fi with a u.FL connector.
 
 Note: the u.FL connector is one of my least favorite connectors - it's very fiddly and, worse, it's extremely easy to tear these connectors off their boards when trying to remove an antenna (as unlike e.g. USB connectors, they have no through-hole element to anchor them solidly to the board). Seeed have a section on installing and removing such antennas [here](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/#installation-of-antenna) - they make it look easy, but that hasn't been my experience.
 
-### Power
+### External power
 
-A significant downside to the Xiao boards is that if you intend to power them via the 5V pin then you need to wire in a diode between your 5V pin and this source (as described [here](https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/#power-pins).
+All of the ESP32 boards can be powered via USB. However, you'll typically want your remote device, e.g. a Raspberry Pi Pico, to power the ESP32 board that makes up one end of the UART to Wi-Fi link.
 
-The Adafruit board has a similar issue but in this case, you can provide power via the battery pins on the back of the board (as described [here](https://learn.adafruit.com/adafruit-qt-py-esp32-c3-wifi-dev-board?view=all#power-3112671)) which do have the relevant diode protection.
+Every ESP32 board has a 5V pin and if the board is connected to USB then you'll see the 5V USB output on this pin.
 
-I'm not sure why the battery pads on the Adafruit board have the diode and those on the Xiao boards do not (TODO: double check this). I _suspect_ that the downside of the diode on the Adafruit board is that a rechargeable lithium battery connected to these pins cannot be recharged via the board's USB port (no mention is made of charging in the Adafruit documentation), i.e. you'd have to disconnect the battery to recharge it with a separated device whereas you clearly can recharge such a battery via the the Xiao board's USB port (as described [here](https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/#battery-usage).
+If you disconnect USB, you can instead power the boardd by connecting an external power source, e.g. the 5V pin from a Pi Pico, to the ESP32's 5V pin.
 
-A simple alternative that doesn't require worrying about diodes is to power the board via a simple 2-pin power-to-USB adapter.
+However, there's a problem if you connect the ESP32 board to USB at the same time that its 5V pin is connected to an external source. You've now got two power sources - the USB power source is protected by a diode that's between it and the 5V pin but there's no such diode protecting the external power source. And this may result in it being destroyed.
 
-TODO: include picture of board powered in this way.
+In practice, if the other device is something like a Pi Pico powered via USB then it will have its own protection diode and there's no real issue. But you need to be certain this is the situation, e.g. if the other board was being powered by a battery with no recharging circuitry or protection diode then this would be a serious issue.
 
-TODO: confirm if the Waveshare, WeAct and Sparkfun boards have pins with the relevant diode:
+A safer option is to avoid using the ESP32 board's 5V altogether. The 5V pin supports being both an input and an output but some boards provide an input only pin which has a diode to protect any external source connected to it in the same way that the board's own USB power source is already protected.
 
-* [Waveshare schematic](https://files.waveshare.com/wiki/ESP32-C3-Zero/ESP32-C3-Zero-Sch.pdf).
-* [Sparkfun schematic](docs/sparkfun-dev-esp32-c3-mini-schematic.pdf) (produced with the [Altium viewer](https://www.altium.com/viewer/) from [`SparkFun_Pro_Micro.sch`](https://github.com/sparkfun/SparkFun_Pro_Micro-ESP32C3/blob/main/Hardware/SparkFun_Dev_ESP32_C3_MINI.sch)).
-* [WeAct schematic](https://github.com/WeActStudio/WeActStudio.ESP32C3CoreBoard/blob/master/Hardware/WeAct-ESP32C3CoreBoard_V10_SchDoc.pdf).
+On larger boards, this is typically labelled VIN (for "voltage in") but on smaller it may be labelled VBAT, BAT or VB (for "battery voltage"). The BAT bit is just indicative, you can use a battery (e.g. a 4.7V Li-ion battery) but any other power source will also do (as long as it can provide the a voltage in the range accepted by the board's voltage regulator, typically between 4.3V and 5.5V for boards like these ESP32 ones).
 
-TODO: I suspect it's simpler just to use USB power for every board rather than worrying about diode or no-diode.
+The following pins are protected by a diode and safe to use to provide power:
+
+* The VB pin on the WeAct ESP32-C3 Core board.
+* The BAT pin on the back of the Adafruit QT Py ESP32-C3 board.
+
+**Important:** the Xiao boards have a BAT pin but it has **no** protective diode (this means a battery can both power the board via this pin and, when power is supplied via USB, be recharged via the pin).
+
+The Xiao, Waveshare and SparkFun boards have no diode protected voltage input pin (and the same is true for many other small boards). But there is another alternative to using the 5V pin for these boards too - you can provide power via a simple USB connector that breaks out its positive and ground pins:
+
+![USB 2-pin connector](images/usb-2-pin-power-connector.png)
+
+Connect your external source to this and then plug it into the ESP32 board's USB port. Your external source is then protected by the diode meant for USB (and anyway the issue of two power sources goes away as you have to unplug this connector if you e.g. temporarily want to connect the ESP32 board to your laptop to update its firmware).
+
+**Important:** connectors, like the one above have a positive and ground wire. It's best to snip off the ground wire and instead permanently connect a ground pin on your other device and your ESP32 board so, that if you unplug this connector and plug in a USB connection from your laptop, the two boards will still have a common ground.
+
+TODO: include picture of board powered in this way **WITH** the ground wire snipped off.
+
+**Remember:** you don't need to worry about using VIN or VBAT or a USB connector like the one above if the other device is itself powered via USB which will invariably have its own protective diode (though, there are notorious cases of boards, like no-brand blue pill STM32 dev boards, not including this basic element).
+
+If you don't want to bother with a USB connector like the one above and have to use the 5V pin but can't guarantee that the external source already has a protective diode then you just need to add an external diode (like one of these [1N4001 diodes](https://www.adafruit.com/product/755)) between it and the 5V pin.
+
+If you want to check the schematic for a particular board to confirm if it has a voltage input pin, this is what you're looking for (taken from the schematic for the Adafruit QT Py ESP32-C3 board):
+
+![USB and external power schematic](images/usb-and-external-power.png)
+
+Typically, 5V is supplied to the LDO (the voltage regulator that converts the incoming voltage to the regulated 3.3V needed by the board) via the VBUS pin of the USB-C connector. You can see that VBUS is connected to the 5V pin but there's a diode between the two protecting the VBUS source. On the back of the Adafruit board, there's a VBAT pin and, as you can see, this pin also has a diode between it and the LDO (and the 5V pin), this time protecting the external source.
+
+Note: when you have two voltage sources connected to an LDO, each protected by a diode, then the sources will both be fine and the LDO will see the higher of the two voltages, e.g. if you have 5V coming from USB and 4.7V coming from a li-ion battery than the LDO will see 5V (confirmed [here](https://forums.adafruit.com/viewtopic.php?t=209656) and double-checked eleswhere).
 
 Alternatives
 ------------
