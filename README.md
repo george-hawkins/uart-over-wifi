@@ -47,7 +47,8 @@ The Xiao boards are interesting in that they come with a u.FL antenna connector 
 
 Note: the u.FL connector is one of my least favorite connectors - it's very fiddly and, worse, it's extremely easy to tear these connectors off their boards when trying to remove an antenna (as unlike e.g. USB connectors, they have no through-hole element to anchor them solidly to the board). Seeed have a section on installing and removing such antennas [here](https://wiki.seeedstudio.com/xiao_esp32s3_getting_started/#installation-of-antenna) - they make it look easy, but that hasn't been my experience.
 
-### External power
+External power
+--------------
 
 All of the ESP32 boards can be powered via USB. However, you'll typically want your remote device, e.g. a Raspberry Pi Pico, to power the ESP32 board that makes up one end of the UART to Wi-Fi link.
 
@@ -105,6 +106,83 @@ TODO:
 ---
 
 See [`udev-rules.md`](udev-rules.md) for `udev` rules for the WeAct Studio classic ESP32 and EP32-C3 Core boards.
+
+Installation
+------------
+
+This section covers installing the server version of UART over Wi-Fi on one of your ESP32 boards and the client version on the other.
+
+The installation requires that you have Python installed on your laptop/PC. If you are using a Mac or Linux then there's nothing to do as Python comes pre-installed on these systems. If you're using Windows then follow the simple instructions [here](docs/python-windows.md).
+
+You can check the version of Python on your machine by opening a terminal (or command prompt on Windows) and entering `python --version`. You should see something like this:
+
+```
+$ python --version
+Python 3.10.8
+```
+
+If you're using a Mac or Linux, you _may_ have to use `python3` instead:
+
+```
+$ python3 --version
+Python 3.10.8
+```
+
+As long as the version is at least 3.6 then all should be fine.
+
+### Download the UART over Wi-Fi project
+
+Go to the UART over Wi-Fi [GitHub page](https://github.com/george-hawkins/uart-over-wifi), click the green _Code_ button and then click _Download ZIP_.
+
+![GitHub download](images/github-download.png)
+
+This will download a file called `uart-over-wifi-master.zip`. Unpack this somewhere that's easy to get to when you're working in a terminal or command prompt window, e.g. your home directory on Mac or Linux or `C:\Users\JoeBloggs` (where `JoeBloggs` is your username).
+
+Unpacking the ZIP file will create a new subdirectory called `uart-over-wifi-master`.
+
+Note: if you're already familiar with `git` then I'd suggest cloning the repository rather than downloading and unpacking this ZIP file.
+
+Then open a terminal or command prompt and `cd` into the unpacked `uart-over-wifi-master` directory. You're now ready for the next step...
+
+### Creating a Python virtual environment
+
+A Python virtual environment establishes a well defined Python environment for a project where you're guaranteed that everything is set up correctly and where you're safe from accidentally making changes that affect the rest of the system or unrelated projects and insulated from changes made elsewhere.
+
+Assuming you've opened a terminal or command prompt and have changed directory to the unpacked UART over Wi-Fi project, we can create a virtual environment.
+
+On Mac or Linux do:
+
+```
+$ python3 -m venv venv
+$ source venv/bin/activate
+(venv) $ pip install --upgrade pip
+```
+
+On Windows do:
+
+```
+> python -m venv venv
+> venv\scripts\activate.bat
+(venv) > pip install --upgrade pip
+```
+
+The first line - `python -m venv venv` - creates the environment (this is a one off step). The next line - `source venv/bin/activate` (or `venv\scripts\activate.bat` on Windows) - activates the environment. And the third line - `pip install --upgrade pip` - is just a nice-to-do step, where we make sure `pip` (the Python package manager) is up-to-date (if it already is, it'll report `Requirement already met` and if not it'll upgrade `pip` to the latest version).
+
+You'll notice that once you activate the environment that the environment name (in this case, the very unoriginal name `venv`) is added into your prompt.
+
+**Important:** if you open another terminal or command prompt (or close and reopen the current one), then you'll need to repeat the activation step - your prompt doesn't contain `(venv)` then you know you've forgotten this step.
+
+Once the environment is activated then all kinds of quirks and issues are eliminated. E.g. the confusion between the `python` and `python3` commands is the result of the infamous switch from Python 2 to Python 3 (which occurred way back in 2008 but still has repercussions today, though thankfully less and less since Python 2 formally reached its end-of-life on January 1st, 2020). In a virtual environment, you can forget about such oddities (and should always just use `python`, knowing that it correctly points to the version of Python that was used to create the environment).
+
+Many non-programmers dislike virtual environments as they introduce an extra step (the need to activate the environment) before you can work on a project. But in the long run (and the short run), they eliminate a lot of problems. If you're reading a Python tutorial and it says you have to e.g. install a package using `sudo` (on Mac or Linux) or from a command prompt (on Windows) that was started using _Run as Administrator_ then it means that things are not being done in a virtual environment and that you're leaving yourself open to all kinds of issues down the line.
+
+Now, that you've got a virtual environment set up, you're ready to start working with your ESP32 boards.
+
+### Installing MicroPython
+
+It's time to install [MicroPython](https://micropython.org/) on your ESP32 boards. This is a slimmed down version designed microcontrollers, like the ESP32 range, and makes developing applications for them far simpler.
+
+The instructions below assume you have an ESP32 C3 board. If you have a classic ESP32 or an S3 then the instructions are almost identical (you just need to change the chip type specified with the `--chip` argument and HERE HERE HERE
 
 Install MicroPython
 -------------------
