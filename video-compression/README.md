@@ -5,9 +5,13 @@ This page describes compressing video, further than it currently is, in order to
 
 **TLDR;** if you want autoplay and looping (and can do without audio) then AVIF or WebP seem to be the way to go. If you want audio (and can live without autoplay and looping) then a little bit more is involved.
 
+Note: Caniuse lists both AVIF and WebP ([here](https://caniuse.com/avif) and [here](https://caniuse.com/webp)) as _Baseline_ (AVIF only reached this milestone in early 2024). This means that they're supported by enough of the browsers in use now that they can be considered essentially universal and used without concern.
+
+### AVIF
+
 ![avif](output-30.avif)
 
-Encoding to AVIF seems bizarrely slow on Linux at the moment (on Ubuntu 22.04 using `ffmpeg` 4.4.2 and also the master nightly 20240301 build and also `avifenc` 0.9.3).
+Encoding to AVIF seems bizarrely slow on Linux at the moment (on Ubuntu 22.04 using the `ffmpeg` 20240301 `master` branch nightly build and also `avifenc` 0.9.3).
 
 Using the `ffmpeg` nightly the following command took 4m 40s, which was about 2 seconds per frame, i.e. each second of 30fps video took a whole minute to encode:
 
@@ -21,7 +25,9 @@ You can find details of what `-crf` means on the `ffmpeg` wiki page for the [`li
 
 Note: the default 4.4.2 `ffmpeg` version that's currently available using `apt` on Ubuntu 22.04 LTS fails with `Unable to find a suitable output format` if I try the above command, hence the use of the statically linked nightly build found [here](https://johnvansickle.com/ffmpeg/) - these builds are hosted John van Sickle rather than `ffmpeg` but they're linked to from the `ffmpeg` [download page](https://ffmpeg.org/download.html) (see the "Linux Static Builds" section).
 
-The older WebP format results in massively larger files with:
+### WebP
+
+The older WebP format results in substantially larger files (2.3MB vs 557KB for the AVIF) with:
 
 ```
 $ ffmpeg -i input.mp4 -loop 0 -vf scale=-1:720 output-4.webp
@@ -29,7 +35,7 @@ $ ffmpeg -i input.mp4 -loop 0 -vf scale=-1:720 output-4.webp
 
 Note that unlike the AVIF encoder, the default is not to loop so, if you want to loop, you have to specify `-loop 0`. I didn't specify an encoder with `-vcodec` as `ffmpeg` has two WebP encoders and I've seen it suggested that it's better to leave it to `ffmpeg` to decide which to use.
 
-Cranking the compression up from the default 4 to 6 produces little improvement (the file size went down from 4.5MB to 4.3MB compared with just 145KB for AVIF) and made the encoder even slower than AVIF (4m 50s vs 4m 40s) - at the default compression of 4, WebP is much faster (just 12s).
+Cranking the `-compression_level` up from the default 4 to 6 produces little improvement (the file size went down just 5%) and made the encoder even slower than AVIF (4m 50s vs 4m 40s) - at the default compression of 4, WebP is much faster (just 12s).
 
 This is the result with the default compression (4) and quality (75), despite the much larger file size, the quality is noticeably worse than the more modern AVIF format.
 
@@ -39,9 +45,60 @@ If you right-click and select "Open image in new tab" for the AVIF and WebP imag
 
 More worryingly, if you look at the upper-right green corner at the end of the clip (before it loops), you'll see noticeable glitching that you don't see in the AVIF.
 
-I also tried creating a corresponding animated GIF but it had the usual awful quality you associate with animated GIFs. And was huge - I didn't bother uploading it.
+### Animated GIF
 
-If you're OK without autoplay and looping, see below. In particular, the above AVIF and WebP options don't work if you also want audio.
+Before AVIF and WebP, there was the animated GIF. I expected the animated GIF results to be worse than they were.
+
+The above videos are 720p at 24fps, the AVIF is 557KB and the WebP is 2.3MB.
+
+The corresponding animated GIF is 8.2MB (and obviously has a far worse color palette, GIF being limited to just 256 colors).
+
+I extracted the frames at 24fps and 12fps and at 720p and 360p as shown below and recombined them into animated GIFs using [`gifsicle`](https://www.lcdf.org/gifsicle/) like so:
+
+
+```
+$ sudo apt install gifsicle
+
+$ mkdir frames-720-24fps
+$ mkdir frames-720-12fps
+$ mkdir frames-360-12fps
+$ mkdir frames-360-24fps
+
+$ ffmpeg -i input.mp4 -vf scale=-1:720 frames-720-24fps/out-%03d.gif
+$ ffmpeg -i input.mp4 -vf scale=-1:360 frames-360-24fps/out-%03d.gif
+$ ffmpeg -i input.mp4 -vf scale=-1:720 -r 12/1 frames-720-12fps/out-%03d.gif
+$ ffmpeg -i input.mp4 -vf scale=-1:360 -r 12/1 frames-360-12fps/out-%03d.gif
+
+$ gifsicle --delay 4 --loop --optimize=3 frames-720-24fps/*.gif > output-720-24fps.gif
+$ gifsicle --delay 8 --loop --optimize=3 frames-720-12fps/*.gif > output-720-12fps.gif
+$ gifsicle --delay 4 --loop --optimize=3 frames-360-24fps/*.gif > output-360-24fps.gif
+$ gifsicle --delay 8 --loop --optimize=3 frames-360-12fps/*.gif > output-360-12fps.gif
+```
+
+Notes:
+
+* `gifsicle` isn't installed by default on Ubuntu, hence the `apt install` step above.
+* The original video was 24fps so, the `-r` argument, to produce a different frame rate, was only needed when extracting the 12fps frames.
+* A `--delay` value of 400ms is needed when constructing the 24fps animated GIF and a value of 800ms for 12fps.
+
+The resulting file sizes were:
+
+```
+1.5M output-360-12fps.gif
+2.5M output-360-24fps.gif
+4.7M output-720-12fps.gif
+8.2M output-720-24fps.gif
+```
+
+So, in terms of file size, the 360p 24fps animated GIF is comparable with the 720p 24fps WebP but all these animated GIFs are substantially larger than the 720p 24fps AVIF.
+
+Here's the 360p 12fps animated GIF:
+
+![animated GIF](output-360-12fps.gif)
+
+---
+
+If you're OK without autoplay and looping, see below. In particular, the above AVIF, WebP and animated GIF options don't work if you also want audio.
 
 YouTube videos
 --------------
@@ -85,13 +142,13 @@ I tried using the `<img>` tag with the `srcset` attribute like so:
 
 But GitHub just strips out the `srcset` attribute.
 
-### WEBP vs JPEG
+### WebP vs JPEG
 
 The small image above is a `.webp` file while the large one is a `.jpg`. If you're using GitHub with a light theme, both will look fine, but if you're using a dark theme, the large one will look odd as the small areas beyond the rounded corners will be white rather than transparent.
 
 This is because JPEG doesn't support transparency so, these areas have to be some color (white in this case) whereas AVIF does support transparency.
 
-An alternative would be to use the classic loseless format PNG but this is a lot less disk efficient - the WEBP image above is just 36KB whereas the corresponding PNG is 115KB.
+An alternative would be to use the classic loseless format PNG but this is a lot less disk efficient - the WebP image above is just 36KB whereas the corresponding PNG is 115KB.
 
 Embedded videos
 ---------------
