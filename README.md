@@ -27,17 +27,20 @@ You'll need two boards - one for each side of the UART connection. Here are the 
 * [WeAct ESP32-C3 Core board](https://www.aliexpress.com/item/1005004960064227.html)
 * [Seeed Xiao ESP32-C3 board](https://www.seeedstudio.com/Seeed-XIAO-ESP32C3-p-5431.html)
 * [Seeed Xiao ESP32-S3 board](https://www.seeedstudio.com/XIAO-ESP32S3-p-5627.html)
+* [M5Stamp C3U Mate](https://shop.m5stack.com/products/m5stamp-c3u-mate-with-pin-headers)
 * [Waveshare ESP32-C3 Mini board](https://www.waveshare.com/esp32-c3-zero.htm)
 * [Adafruit QT Py ESP32-C3 board](https://www.adafruit.com/product/5405)
 * [SparkFun Pro Micro ESP32-C3 board](https://www.sparkfun.com/products/23484)
 
 The Seeed Xiao is the only one where I suggest an S3 board as an alternative to the C3 variant - the S3 and C3 boards are almost identical (other than the MCU) but the C3 is the only one of the above boards that does not a user controllable LED. This may seem a minor point but I find having a builtin LED can be very useful signalling the state of the board (e.g. flashing the LED while the board is going through the setup phase of establishing a connection).
 
-The Adafruit and Waveshare boards have a neo-pixel (a WS2812 on the Waveshare board and a WS2812B on the Adafruit board) while the others (except the Xiao C3) have a standard classic SMD LED.
+The Adafruit, M5Stamp and Waveshare boards have a neo-pixel (a WS2812 on the Waveshare board, a WS2812B on the Adafruit board and an SK6812 on the M5Stamp board) while the others have a standard classic SMD LED (except the Xiao C3 which has no user controllable on-board LED).
 
 There are other nice mini boards but I've excluded boards, like the lovely [TinyS3](https://esp32s3.com/tinys3.html) because at US$20, they're significantly more expensive than the boards listed above. [Lilygo](https://www.lilygo.cc/collections/all) is another provider of cheap ESP32 boards - however, their boards tend to be combined with someother device (most commonly an LCD) and all their plain ESP32 boards seem to be a slightly larger form-factor than the ones listed above.
 
 There are no end of no-brand ESP32 boards on AliExpress. However, I suggest you get a board from a clear source like the ones above. There is one no-brand board that I will mention as it appears everywhere - the Super Mini. I've bought these from several different AliExpress stores and they seem to all work fine - for a small section about them and links to the stores, see [`notes.md`](docs/notes.md).
+
+Note: M5Stamp have two very similar C3 boards - the [C3U Mate](https://shop.m5stack.com/products/m5stamp-c3u-mate-with-pin-headers) that uses the ESP32 C3's native USB support and the older [C3 Mate](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers) where they used an external WCH CH9102 UART-to-USB chip.
 
 ### Antenna
 
@@ -688,3 +691,14 @@ This script is a little fancier in that it wraps the main loop in a `try`, if an
 In practice, I never hit any exceptions with this code.
 
 The final script, in this section, is [`dev/usb_uart0_demo_buffered.py`](dev/usb_uart0_demo_buffered.py), where I experimented with caching object references (see optimization notes elsewhere in this document) and buffering the read bytes so that more than one could be written out per `write` call. These changes did **not** improve performance.
+
+---
+
+Exposed pins
+------------
+
+When creating a connection between my main dev board and the ESP32, I've used male and female 4-pin Dupont connectors.
+
+Dupont connectors are traditional in this kind of breadboarding prototyping environment, but usually I'd prefer a connector, like this [4-pin JST SM one](https://www.adafruit.com/product/578), where the male pins are shrouded to protect them against accidentally shorting against something.
+
+If I do have to use a connector like the Dupont then I generally put the female connector on the side that's supplying power. So, e.g. if the dev board is supplying power and the ESP32 board is consuming power then when the two are unplugged, it'll be the unpowered device that has the connector with the exposed male pins.
