@@ -42,6 +42,10 @@ There are no end of no-brand ESP32 boards on AliExpress. However, I suggest you 
 
 Note: M5Stamp have two very similar C3 boards - the [C3U Mate](https://shop.m5stack.com/products/m5stamp-c3u-mate-with-pin-headers) that uses the ESP32 C3's native USB support and the older [C3 Mate](https://shop.m5stack.com/products/m5stamp-c3-mate-with-pin-headers) where they used an external WCH CH9102 UART-to-USB chip.
 
+Note: I was going to add the DFRobot [Beetle ESP32-C3](https://www.dfrobot.com/product-2566.html) to the list above but I can't see a diode between the VIN pin and the USB power pin in the [schematic](https://dfimg.dfrobot.com/nobody/wiki/d0e8b7f0f042c14f6959c3edc748053b.pdf) (the schematic shows VUSB exposed directly on pin 2 of the P2 header, i.e. the pin labelled VIN on the silkscreen) - if this is really the case, I suggest people avoid this board.
+
+TODO: surely even the no-name Super Mini boards have a diode protecting the USB power pin - confirm this with a multimeter and one of your USB to 2-pin breakouts. Hmm... the Waveshare schematic has the same lack of diode - maybe some people think this is OK?!?
+
 ### Antenna
 
 The Adafruit and Waveshare boards above come with a small ceramic chip antenna. The WeAct and SparkFun boards come with an [inverted-F PCB antenna](https://en.wikipedia.org/wiki/Inverted-F_antenna).
@@ -52,6 +56,9 @@ Note: the u.FL connector is one of my least favorite connectors - it's very fidd
 
 External power
 --------------
+
+TODO: table with | WeAct with diode protected VB | Super Mini with diode | Super Mini with power plus via USB | Super Mini power plus via 5V |
+ Point out that last one is the only (sometimes) dangerous one. And point out VBAT isn't always diode protected, e.g. Xiao (as they expect you to attach a rechargeable rather than power from another board).
 
 All of the ESP32 boards can be powered via USB. However, you'll typically want your remote device, e.g. a Raspberry Pi Pico, to power the ESP32 board that makes up one end of the UART to Wi-Fi link.
 
