@@ -709,3 +709,11 @@ When creating a connection between my main dev board and the ESP32, I've used ma
 Dupont connectors are traditional in this kind of breadboarding prototyping environment, but usually I'd prefer a connector, like this [4-pin JST SM one](https://www.adafruit.com/product/578), where the male pins are shrouded to protect them against accidentally shorting against something.
 
 If I do have to use a connector like the Dupont then I generally put the female connector on the side that's supplying power. So, e.g. if the dev board is supplying power and the ESP32 board is consuming power then when the two are unplugged, it'll be the unpowered device that has the connector with the exposed male pins.
+
+TODOs
+-----
+
+Add a closenss warning about holding a TX too close an RX (I presume Bluetooth devices and possibly WiFi automatically correct for this?!?) such that the RX is overwhelmed and _appears_ to lose signal - flooding / shouting / overwhelming.
+
+No driver was needed for basic CDC with serial-to-USB boards from WeAct - the website says a driver is only needed for VCP functionality but I don't know what that might add.
+
