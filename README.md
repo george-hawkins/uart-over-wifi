@@ -60,6 +60,8 @@ External power
 TODO: table with | WeAct with diode protected VB | Super Mini with diode | Super Mini with power plus via USB | Super Mini power plus via 5V |
  Point out that last one is the only (sometimes) dangerous one. And point out VBAT isn't always diode protected, e.g. Xiao (as they expect you to attach a rechargeable rather than power from another board).
 
+TODO: point out that you need **two** diodes, one protecting the VBUS of your ESP32-C3's USB connector and one protecting the provider of external power. With the WeAct and Adafruit boards you get both on the board. With others you get just the diode protecting VBUS and need to handle protecting the external supply yourself (either with a diode or by routing external power via the USB connector). And amazingly (to me) on some boards, you get neither diode and the only safe option is routing the external power via the USB.
+
 All of the ESP32 boards can be powered via USB. However, you'll typically want your remote device, e.g. a Raspberry Pi Pico, to power the ESP32 board that makes up one end of the UART to Wi-Fi link.
 
 Every ESP32 board has a 5V pin and if the board is connected to USB then you'll see the 5V USB output on this pin.
@@ -717,3 +719,4 @@ Add a closenss warning about holding a TX too close an RX (I presume Bluetooth d
 
 No driver was needed for basic CDC with serial-to-USB boards from WeAct - the website says a driver is only needed for VCP functionality but I don't know what that might add.
 
+My Seeed 2.4GHz rod antenna looks like [this](https://photos.app.goo.gl/tPJskZSCJvL1P1wK6) if you remove the protective plastic shell. This is a printed dipole antenna which is a type of PCB trace antenna.
