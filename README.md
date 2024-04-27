@@ -115,6 +115,81 @@ TODO:
 * Kickstarter board
 * Telemetry radios.
 
+### AliExpress
+
+On AliExpress, there are no end of modules from no-name manufacturers (or at least manufacturers who make no effort to maintain a web presence beyond some hard to find Chinese-language site). Most of these modules implement there own protocols, i.e. they're for wireless communication but you have to use some ad-hoc protocol from the manufacturer rather than the device just looking like a UART to the connected devices.
+
+However, some do, like this project, provide a UART interface that's tunneled over wireless. Some use a defined wireless protocol, like Bluetooth, but others use their own proprietary 433MHz or 2.4GHz.
+
+#### The HC-12
+
+These modules come from a [HC Tech](https://www.hc01.com/), a Guangzhou-based company that produces a large range of devices for 433MHz and 2.4GHz (Bluetooth 2.0 and Bluetooth LE). However, for whatever reason, only a few seem to be in common use and widly available.
+
+One such is the HC-12 - a 433MHz module with an advertised range of 1km and maximum rate of 115,200 bps. It uses a SiLabs [Si4463](https://www.silabs.com/wireless/proprietary/ezradiopro-sub-ghz-ics/device.si4463) radio module in combination with a STMicroelectronics [STM8S003F3](https://www.st.com/en/microcontrollers-microprocessors/stm8s003f3.html) MCU.
+
+You can find many YouTube videos (like this [one](https://www.youtube.com/watch?v=vqRqtgvltOI)) and web pages (like [this](https://www.instructables.com/Long-Range-18km-Arduino-to-Arduino-Wireless-Commun/) and [this](https://www.allaboutcircuits.com/projects/understanding-and-implementing-the-hc-12-wireless-transceiver-module/)) explaining how to use it.
+
+There are many randomly maintained and translated versions of HC Tech's own manual for the HC-12 floating around but HC Tech do provide their own [English manual](https://www.hc01.com/downloads/HC-12%20english%20datasheets.pdf) which seems to cover everything needed.
+
+There are no end of AliExpress store that sell the HC-12. Here are some of the bigger ones:
+
+* [HC-12 at All Goods](https://www.aliexpress.com/item/1005001927544982.html)
+* [HC-12 at TZT](https://www.aliexpress.com/item/32921079886.html)
+* [HC-12 at Simple Robot](https://www.aliexpress.com/item/32369744869.html)
+
+It's generally sold in two variants - one where the MCU is the STM8S003F3P6 which uses the older larger TSSOP-20 packaging and one that uses the STM8S003F3U6 with the newer UFQFPN 20 packaging. The newer packaging adds less than $0.30 to the price and is the one I'd chose.
+
+#### HC-06 and HC-05
+
+Note: if you're not familiar with Bluetooth, you might think classic Bluetooth 2.0 devices must be less capable than Bluetooth LE devices as LE was introduced as part of the much more recent 4.0 recent revision of the Bluetooth protocol. But LE stands for low energy and while LE devices consume very little power they also operate over a far shorter range. So, if range is important you probably shouldn't go with an LE device. However, as always there are exceptions and some LE devices can transmit at increased TX power levels (e.g. see the WCH CH9143 modules mentioned elsewhere) or may be integrated with a Front-end Module (FEM) that provides increased range.
+
+Both the HC-05 and HC-06 use the Cambridge Silicon Radio (CSR) BC417 radio module. CSR was acquired by Qualcomm in 2015 and the BC417 is now sold by them e.g. [here](https://www.digikey.com/en/products/detail/qualcomm/BC417143B-GIRN-E4/2232203) on DigiKey. However, I can't find a Qualcomm datasheet for the BC417 but you can find CSR versions of the datasheet on various websites (e.g. [here](https://cdn.sparkfun.com/datasheets/Wireless/Bluetooth/CSR-BC417-datasheet.pdf) on the SparkFun site). The other large chip on the board isn't a companion MCU, as I first suspected (it seems the BC417 can handle everything itself), but instead _appears_ to be just a flash memory module - a Macronix MX29LV400.
+
+HC Tech specify the range of these modules as just 10m, i.e. substantially less than the 1km of their HC-12 433MHz module above. However, the HC-12 supports at most 115,200 bps while the HC-05 and HC-06 support up 1,382,400 bps (but higher bps values generally reduce range).
+
+It's hard to find details on what it any differrences there are between the HC-05 and HC-06. It _seems_ to just come down to the fact that the HC-05 can be used in both [master and slave roles](https://learn.sparkfun.com/tutorials/bluetooth-basics/how-bluetooth-works) while the HC-06 can only be used as a slave. If this is correct then it's extremely non-obvious from reading the HC Tech [manual for the HC-06](https://www.hc01.com/downloads/HC-06%20english%20datasheet.pdf) and the [manual for the HC-05](https://www.hc01.com/downloads/HC-05%20english%20datasheet.pdf). Both manuals are very similar but the HC-06 one seems to be more detailed,(in particular the HC-06 has a section on the module's AT commands.
+
+If it's the case that the HC-06 can only be used as a slave module then it's only suitable for use with a Bluetooth master device (such as a smartphone, laptop or a master-capable module like the HC-05). So, if you want a UART over wireless setup where both sides just see a UART interface then you need either:
+
+* Two HC-05 modules with one acting as a master and one as a slave.
+* Or one HC-05 modules acting as a master and one HC-06 acting as a slave.
+
+Note: the HC-06 is generally sold with pin header soldered to just four of its six pins - the four you use in day-to-day operation - with the STATE and EN pins left unconnected. While the HC-05 is sold with pin header soldered to all of the modules six pins.
+
+Again the HC-05 and HC-06 are generally sold in two variants, one where the BC417 comes in an older larger packaging form and another using a newer smaller form. I would always go for the smaller newer form (and in this case, the modules using the newer form factor BC417 seem to be the cheaper ones).
+
+The best YouTube video covering using a pair of these device to provide a UART over wireless service is this [one](https://www.youtube.com/watch?v=hyME1osgr7s) from [How to Mechatronics](https://howtomechatronics.com/). Most other videos and sites just covering using one module in combination with a smartphone or laptop with only the side that's physically connected to the module seeing the connection as if it was a classic UART.
+
+Here some of the larger AliExpress stores carrying these modules:
+
+* [HC-05/06 at Tenstar](https://www.aliexpress.com/item/32340945238.html)
+* [HC-05/06 at EstarDyn](https://www.aliexpress.com/item/1005002168517770.html)
+* [HC-05/06 at Simple Robot](https://www.aliexpress.com/item/33010159305.html)
+* [HC-05/05 at RoarKit](https://www.aliexpress.com/item/1871275037.html)
+* [HC-05/06 at World of Robots](https://www.aliexpress.com/item/1005004893409587.html)
+
+Note: only some of them have the newer form factor BC417 modules with soldered headers.
+
+#### JDY range
+
+JDY is another popular range of devices found on AliExpress - these devices are appear to be produced by Shenzhen Jindouyun Electronic Technology but other than a few filings [here](https://fcc.report/company/Shenzhen-Jindouyun-Electronic-Technology-Co-L-T-D) with the UC [FCC](https://en.wikipedia.org/wiki/Federal_Communications_Commission), they appear to have no obvious web presence in either English or Chinese.
+
+They produce devices mainly using Bluetooth but also produce some using their own proprietary 2.4GHz protocol for further range than their Bluetooth modules.
+
+Below, I just list some details on some of these modules with links to the most complete PDF manuals I can find for them and links to where they can be bought on AliExpress.
+
+* The JDY-41 with an advertized range of 160m with a maximum rate of 38,400 bpsusing a proprietary 2.4GHz protocol - [JDY-41 manual](https://www.postavrobota.cz/fotky46704/fotov/_ps_2370JDY-41-Manual.pdf) - available from [Simple Robot](https://www.aliexpress.com/item/1005003207184013.html) - there's a variant with an onboard antenna and one with a connection requiring an external antenna (using this you might be able to extend its range even further).
+* The JDY-40 - this appears to be an older version of the JDY-41 - it also uses a proprietary 2.4GHz protocol (that is **not** compatible with the JDY-41) but has a lower advertized range of 120m and lower maximum rate of just 19,200 bps - [JDY-40 manual](https://w.electrodragon.com/w/images/0/05/EY-40_English_manual.pdf) - available from [Simple Robot](https://www.aliexpress.com/item/33019680881.html), [TZT](https://vi.aliexpress.com/item/4000319184792.) and [EC-Buying](https://vi.aliexpress.com/item/1005004891495966.html).
+* The JDY-31 with an advertized range of 30m with a maximum rate of 115,200 bps using classic Bluetooth 3.0 - slightly different manuals [here](https://adastra-soft.com/wp-content/uploads/2021/06/JDY-31_manual_2.pdf) and [here](https://myosuploads3.banggood.com/products/20190129/20190129043725SKUA87502.pdf) - available from [Wavgat](https://www.aliexpress.com/item/32998624269.html), [Sincere](https://www.aliexpress.com/item/32890543550.html) and [Quason](https://vi.aliexpress.com/item/1005001571180654.html).
+
+Note: like the JDY-41, the JDY-31 has an older less capable version - the JDY-30 which only support half the maximum data rate of the JDY-31 (115,200 bps vs 57,600 bps).
+
+The JDY-31 are the JDY family equivalents of the HC Tech HC-05/06 (it's even reported that they're compatible) but with a greater advertized range.
+
+There are far fewer tutorials and vidoes out there for JDY devices compared to HC Tech devices like the HC-12. But here's [one on the JDY-41](https://www.youtube.com/watch?v=tiuYPqh9sz0) (with accompanying GitHub [repo](https://github.com/RalphBacon/257-Serial-Wireless-Comms)) from Ralph Bacon - interestingly, he compares his experience using the JDY-41 with the HC-12. And here's [one](https://www.youtube.com/watch?v=HxjE9l9xcSs) from Sujit Vasanth and [one](https://www.youtube.com/watch?v=s-lzV_RfZoo) from Antony Cartwright on the JDY-31.
+
+The manual and video linked to above for the JDY-41 show a pair being used, i.e. the devices connected to both ends see a UART connection. Whereas the manual and videos for the JDY-41 just show it being used on its own, i.e. connected physically to a device that sees it as a UART while a smartphone or laptop sees it as a Bluetooth device but _presumably_ if it's similar to the HC-05/06 then it can also be used in a setup where a pair of devices talk to each other.
+
 ---
 
 See [`udev-rules.md`](udev-rules.md) for `udev` rules for the WeAct Studio classic ESP32 and EP32-C3 Core boards.
@@ -720,3 +795,19 @@ Add a closenss warning about holding a TX too close an RX (I presume Bluetooth d
 No driver was needed for basic CDC with serial-to-USB boards from WeAct - the website says a driver is only needed for VCP functionality but I don't know what that might add.
 
 My Seeed 2.4GHz rod antenna looks like [this](https://photos.app.goo.gl/tPJskZSCJvL1P1wK6) if you remove the protective plastic shell. This is a printed dipole antenna which is a type of PCB trace antenna.
+
+### Antennas
+
+I bought sleaved-balum antennas here:
+
+* Ecmail: <https://www.aliexpress.com/item/4000127092025.html>
+* Samiore: <https://www.aliexpress.com/item/4001081855333.html>
+* TZT: <https://www.aliexpress.com/item/4001095606059.html>
+
+It turns out Ecmail also sell there's in smaller packs of 5: <https://www.aliexpress.com/item/32907219209.html> - and perhaps the others do too.
+
+I also later bought ones from:
+
+* EC-buying: <https://www.aliexpress.com/item/1005004731400160.html>
+* Weinuo: <https://www.aliexpress.com/item/1005003522086976.html>
+
