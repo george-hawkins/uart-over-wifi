@@ -139,6 +139,14 @@ There are no end of AliExpress store that sell the HC-12. Here are some of the b
 
 It's generally sold in two variants - one where the MCU is the STM8S003F3P6 which uses the older larger TSSOP-20 packaging and one that uses the STM8S003F3U6 with the newer UFQFPN 20 packaging. The newer packaging adds less than $0.30 to the price and is the one I'd chose.
 
+##### HC-12 range
+
+Of all the modules covered here, the HC-12 should be able to achieve the greatest range. However, apparently many modules sold on AliExpress and elsewhere are clones with an error on the PCB that limits the range to at most 50m. This [video](https://www.youtube.com/watch?v=ZfBuEAH-Q8Y) from DIY Tech Bros covers how to identify this problem and then fix it with some soldering.
+
+In [another video](https://www.youtube.com/watch?v=awOPJK5He28) from DIY Tech Bros, they show that they could achieve a range of 1.8 km - they also recommend a version of the HC-12 sold [here](https://www.banggood.com/Geekcreit-HC-12-433MHz-SI4463-Wireless-Serial-Module-Wireless-Transceiver-Transmission-Serial-Communication-Data-Board-Remote-1000M-p-973522.html) on Banggood rather than an AliExpress store. Tom Heylen who also has a [video](https://www.youtube.com/watch?v=DGRPqeacJns) on, among other things, achieving maximum range with the HC-12 also links to this version of the HC-12.
+
+The HC Tech website has this [picture](https://www.hc01.com/img/home_banner_new.68434575.png) on how to identify a genuine HC-12. However, none of the models on AliExpress or Banggood match the HC Tech image. The DIY Tech Bros say they also managed to buy an HC-12 directly from HC Tech and HC Tech do have a Chinese-language-only online [store](http://www.hc01.shop/productDetail?id=66). Like many Chinese sites, they don't seem to take security very seriously - rather than using HTTPS, they just have a plain unencrypted site. And as far as I can see they only ship to China and Taiwan. The [QQ messenger](https://en.wikipedia.org/wiki/Tencent_QQ) contacts for the HC Tech sales team can be found on their [contact-us page](https://www.hc01.com/contactUs) so, it may be possible to find out where else one can buy genuine boards from them.
+
 #### HC-06 and HC-05
 
 Note: if you're not familiar with Bluetooth, you might think classic Bluetooth 2.0 devices must be less capable than Bluetooth LE devices as LE was introduced as part of the much more recent 4.0 recent revision of the Bluetooth protocol. But LE stands for low energy and while LE devices consume very little power they also operate over a far shorter range. So, if range is important you probably shouldn't go with an LE device. However, as always there are exceptions and some LE devices can transmit at increased TX power levels (e.g. see the WCH CH9143 modules mentioned elsewhere) or may be integrated with a Front-end Module (FEM) that provides increased range.
