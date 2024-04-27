@@ -127,7 +127,7 @@ These modules come from a [HC Tech](https://www.hc01.com/), a Guangzhou-based co
 
 One such is the HC-12 - a 433MHz module with an advertised range of 1km and maximum rate of 115,200 bps. It uses a SiLabs [Si4463](https://www.silabs.com/wireless/proprietary/ezradiopro-sub-ghz-ics/device.si4463) radio module in combination with a STMicroelectronics [STM8S003F3](https://www.st.com/en/microcontrollers-microprocessors/stm8s003f3.html) MCU.
 
-You can find many YouTube videos (like this [one](https://www.youtube.com/watch?v=vqRqtgvltOI)) and web pages (like [this](https://www.instructables.com/Long-Range-18km-Arduino-to-Arduino-Wireless-Commun/) and [this](https://www.allaboutcircuits.com/projects/understanding-and-implementing-the-hc-12-wireless-transceiver-module/)) explaining how to use it.
+You can find many YouTube videos (like [this](https://www.youtube.com/watch?v=0zOTvB0T5fY), [this](https://www.youtube.com/watch?v=DGRPqeacJns) and [this](https://www.youtube.com/watch?v=vqRqtgvltOI)) and web pages (like [this](https://www.instructables.com/Long-Range-18km-Arduino-to-Arduino-Wireless-Commun/) and [this](https://www.allaboutcircuits.com/projects/understanding-and-implementing-the-hc-12-wireless-transceiver-module/)) explaining how to use it.
 
 There are many randomly maintained and translated versions of HC Tech's own manual for the HC-12 floating around but HC Tech do provide their own [English manual](https://www.hc01.com/downloads/HC-12%20english%20datasheets.pdf) which seems to cover everything needed.
 
@@ -146,6 +146,28 @@ Of all the modules covered here, the HC-12 should be able to achieve the greates
 In [another video](https://www.youtube.com/watch?v=awOPJK5He28) from DIY Tech Bros, they show that they could achieve a range of 1.8 km - they also recommend a version of the HC-12 sold [here](https://www.banggood.com/Geekcreit-HC-12-433MHz-SI4463-Wireless-Serial-Module-Wireless-Transceiver-Transmission-Serial-Communication-Data-Board-Remote-1000M-p-973522.html) on Banggood rather than an AliExpress store. Tom Heylen who also has a [video](https://www.youtube.com/watch?v=DGRPqeacJns) on, among other things, achieving maximum range with the HC-12 also links to this version of the HC-12.
 
 The HC Tech website has this [picture](https://www.hc01.com/img/home_banner_new.68434575.png) on how to identify a genuine HC-12. However, none of the models on AliExpress or Banggood match the HC Tech image. The DIY Tech Bros say they also managed to buy an HC-12 directly from HC Tech and HC Tech do have a Chinese-language-only online [store](http://www.hc01.shop/productDetail?id=66). Like many Chinese sites, they don't seem to take security very seriously - rather than using HTTPS, they just have a plain unencrypted site. And as far as I can see they only ship to China and Taiwan. The [QQ messenger](https://en.wikipedia.org/wiki/Tencent_QQ) contacts for the HC Tech sales team can be found on their [contact-us page](https://www.hc01.com/contactUs) so, it may be possible to find out where else one can buy genuine boards from them.
+
+They also have a Taoboa [store](https://item.taobao.com/item.htm?id=20265137304) but it's unclear if they ship overseas. There are services that will ship items from Taoboa overseas.
+
+##### HC-12 open source
+
+As the HC-12 is a combination of two very standard components - an Si4463 radio module and an STM8S003F3 MCU, I'd have expected open source reimplementations of both the hardware and the firmware.
+
+However, I didn't find either. Various people have taken a shot at reimplementating the firmware but no one seems to have gotten very far. Examples includes:
+
+* Hagen Fritsch's [HC-12 tools](https://github.com/rumpeltux/hc12) and [HC-12 firmware base](https://github.com/rumpeltux/hc12fw) (see also his blog post, from 2020, [here](https://itooktheredpill.irgendwo.org/2020/hc12-hacking/), with a 2024 update at the end).
+* Paul D. Smith's [hc12x project](https://github.com/papadeltasierra/hc12x/blob/first-stab/docs/project.md) (he seems to have a odd take on branching so, check for the latest branch [here](https://github.com/papadeltasierra/hc12x/branches)).
+* Andrew Litt's [hc12pj project](https://github.com/al177/hc12pj).
+* Thomas's stm8ef [HC-12 notes](https://github.com/TG9541/stm8ef/wiki/Board-HC12) and [HC-12 branch](https://github.com/TG9541/stm8ef/tree/HC12/HC12).
+
+There are also various open source resources for working with just the Si4463 radio module:
+
+* Zak Kemble's Si4463 Radio Library for AVR and Arduino - [blog post](https://blog.zakkemble.net/si4463-radio-library-avr-arduino/) and [repo](https://github.com/ZakKemble/Si446x).
+* Alexander Sholohov [si4463-beacon project](https://github.com/alexander-sholohov/si4463-beacon) (see also Marco Campinoti's [derived project](https://github.com/IU5HKU/Si4463-CW-Beacon/) that features a wiring diagram in the `README`).
+* Lab409'a [driver_si4463 project](https://github.com/Borchevkin/driver_si4463).
+* Fademike's [STM8S003 and Si4463 project](https://github.com/fademike/STM8S003_AND_SI4463).
+
+None of these projects seems to be under active development and none of them seem to have gained much popularity or traction.
 
 #### HC-06 and HC-05
 
