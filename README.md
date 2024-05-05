@@ -220,6 +220,83 @@ There are far fewer tutorials and vidoes out there for JDY devices compared to H
 
 The manual and video linked to above for the JDY-41 show a pair being used, i.e. the devices connected to both ends see a UART connection. Whereas the manual and videos for the JDY-41 just show it being used on its own, i.e. connected physically to a device that sees it as a UART while a smartphone or laptop sees it as a Bluetooth device but _presumably_ if it's similar to the HC-05/06 then it can also be used in a setup where a pair of devices talk to each other.
 
+#### Other devices - nRF24L01+
+
+Initially, I restricted myself to wireless devices that exposed a UART interface to whatever they were directly wired to,
+
+However, here I cover two other devices which I felt I couldn't ignore - the first for its popularity (and suitability) and the second as an interesting but not yet very popular option.
+
+First the [nRF24L01+](https://www.nordicsemi.com/Products/nRF24-series) from Nordic that uses the 2.4 GHz band. There are a plethora of boards available on AliExpress that are based around this chip. But the ones that I think are interesting are those that feature an additional front-end module (FEM) that boosts the signal so that it can operate at ranges up to 2km.
+
+Getting the most out of these devices requires a little effort, e.g. keeping SPI wires short, adding a capacitor at the power input, using a good antenna etc. For a good video that covers all these issues, see this [one](https://www.youtube.com/watch?v=Z7_Cy66Vnrc) by Electronoobs. There are no end of videos covering how to code up things to get two Arduinos talking via an nRF24L01+ module, I won't list any here, just search on YouTube.
+
+**1.** Module with FEM, SMA adapter and whip antenna
+
+This appears to be the classic and most popular of the variants featuring a FEM. Stores carrying this module:
+
+* [nRF24L01+ PA at Wavgat](https://www.aliexpress.com/item/32517849393.html)
+* [nRF24L01+ PA at Samiore](https://www.aliexpress.com/item/32848834985.html)
+* [nRF24L01+ PA at Win Win](https://www.aliexpress.com/item/32330779943.html)
+* [nRF24L01+ PA at All Goods](https://www.aliexpress.com/item/1005006208789376.html)
+
+**2.** Module with FEM, onboard inverted-F antenna and u.FL connector for external antenna
+
+This is a newer variant that features a PCB antenna with a u.FL connector that allows you to connect an external antenna for maximum range.
+
+* [GT-24 at Wavgat](https://www.aliexpress.com/item/32517849393.html)
+* [GT-24 at Win Win](https://www.aliexpress.com/item/32330779943.html)
+* [GT-24 at Samiore](https://www.aliexpress.com/item/1005003674557650.html)
+
+**3.** Module with FEM and u.FL connector for external antenna
+
+This is a less common variant where you have to connect an external antenna via its u.FL connector. For when you know that you definitely want to use an external connector, this seems a more obvious choice.
+
+* [GT-24 mini at All Goods](https://www.aliexpress.com/item/1005006208789376.html) (suitable antenna listed on same page)
+* [GT-24 mini EC-Buying](https://www.aliexpress.com/item/4001032051571.html) (suitable antenna, from same store, [here](https://www.aliexpress.com/item/4001041396823.html))
+
+##### Control board
+
+The nRF24L01+ features an SPI interface so, if you want it to look like a UART to some other device you'll need to add in a small control board in-between it and your device, wire it up to your nRF24L01+ module and program it to expose a UART and transfer data back and forward between it and the module.
+
+If you're not so interested in range and a simple on-board PCB antenna will do then the RF-Nano looks like an interesting option, it's a board that combines the nRF24L01+ with an Arduino ATmega328P is a single package, you can find it an many stores, e.g. [here from Simple Robot](https://www.aliexpress.com/item/1005005593408190.html).
+
+However, if you want an external antenna then you'll have to combine one of the modules listed above with a separate MCU board.
+
+Note: at first I thought a variant of the RF-Nana available [here from Emakefun](https://www.aliexpress.com/item/1005005472547279.html) and [here from Keywishbot](https://www.aliexpress.com/item/1005005857746800.html), that feature a u.FL connector in addition to the normal PCB antenna, would be perfect. However, as made clear from the Emakefun [README](https://github.com/emakefun/rf-nano/blob/master/README.md#switching-between-on-board-antenna-and-ipex-external-antenna), some tricky resoldering of absolutely tiny SMD components is required to enable the u.FL connector (the [instructions](https://github.com/keywish/keywish-nano-plus/blob/master/RF-Nano/RF-NANO%20Operating%20Instruction_V.1.1.pdf) on the Keywishbot repo seem to indicate that they're just reselling the Emakefun board).
+
+There are obviously no end of small MCU boards that you could pair with your nRF24L01+ module. But one that seems like an obvious choice is the RP2030-Zero, this is a cut-down version of the basic non-Wi-Fi [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/). This is available from no end of stores:
+
+* [RP2030-Zero from Win Win](https://www.aliexpress.com/item/1005004967926448.html)
+* [RP2030-Zero from WCMCU](https://www.aliexpress.com/item/1005004281549886.html)
+* [RP2030-Zero from Simple Robot](https://www.aliexpress.com/item/1005004276968886.html)
+* [RP2030-Zero from Tenstar](https://www.aliexpress.com/item/1005005877545526.html)
+* [RP2030-Zero from Advanced Tech](https://www.aliexpress.com/item/1005004276990620.html)
+* [RP2030-Zero from TZT 123](https://www.aliexpress.com/item/1005005106712277.html)
+* [RP2030-Zero from All Goods](https://www.aliexpress.com/item/1005005106645508.html)
+* [RP2030-Zero from A+A+A](https://www.aliexpress.com/item/1005004288978233.html)
+* [RP2030-Zero from EC-Buying](https://www.aliexpress.com/item/1005003823256706.html)
+* [RP2030-Zero from TZT-Five-Star](https://www.aliexpress.com/item/1005005108459589.html)
+* [RP2030-Zero from Aitexm Robot](https://www.aliexpress.com/item/1005004389234434.html)
+* [RP2030-Zero from Samiore](https://www.aliexpress.com/item/1005004435193398.html)
+
+As you can see, many of the stores up above, that sell the various nRF24L01+ modules, also see the RP2030-Zero.
+
+#### Other devices - RFM6x and RFM9x
+
+RFM9x radios are used in many [LoRa](https://en.wikipedia.org/wiki/LoRa) modules, e.g. these [ones](https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/overview) from Adafruit. LoRa modules typically operate up to a maximum of 40 kbps which is too low for my particular interest - however, these radios can be operated in a non-LoRa mode where they operate as FSK radios that can be operated in a packetized mode where they can achieve 300 kbps (at the cost of decreased range).
+
+While RFM9x radios can be operated in LoRa mode or as non-LoRa packet radios, there are cheaper RFM6x radios that have no LoRa support but are basically identical in non-LoRa mode.
+
+For how to operate RFM6x and RFM9x modules as non-LoRa packetized radios, see these [instructions](https://learn.adafruit.com/adafruit-rfm69hcw-and-rfm96-rfm95-rfm98-lora-packet-padio-breakouts/using-the-rfm69-radio) from Adafruit where they include links to the relevant Arduino and CircuitPython libraries (note they just talk about RFM6x radios but the libraries they use, e.g. [RadioHead](https://www.airspayce.com/mikem/arduino/RadioHead/) support both RFM6x and RFM9x radios).
+
+For whatever reason, only RFM9x modules seem to be popular on AliExpress:
+
+* [RFM9x modules with u.FL connector for an external antenna from Simple Robot](https://www.aliexpress.com/item/32824499318.html)
+* [RFM9x modules with helical antenna from Duoweisi Module](https://www.aliexpress.com/item/1005003249965079.html)
+* [RFM9x modules with helical antenna from Shenzhen Duoweisi Tech](https://www.aliexpress.com/item/1005006184943399.html)
+
+Note: according to the Semtech [selector guide](https://www.semtech.com/uploads/design-support/SG-SEMTECH-WSP.pdf), the "SX1276 is superset [of the SX1278]", i.e. the lower numbered version is actually the more capable.
+
 ---
 
 See [`udev-rules.md`](udev-rules.md) for `udev` rules for the WeAct Studio classic ESP32 and EP32-C3 Core boards.
