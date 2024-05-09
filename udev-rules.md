@@ -75,3 +75,61 @@ SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7522", \
 ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7522", ENV{MTP_NO_PROBE}="1"
 ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="7522", ENV{ID_MM_DEVICE_IGNORE}="1"
 ```
+
+WCH CH343P UART to serial
+-------------------------
+
+`/var/log/syslog` output:
+
+```
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx kernel: [11758.402439] usb 1-7.1: new full-speed USB device number 7 using xhci_hcd
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx kernel: [11758.504798] usb 1-7.1: New USB device found, idVendor=1a86, idProduct=55d3, bcdDevice= 4.45
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx kernel: [11758.504812] usb 1-7.1: New USB device strings: Mfr=0, Product=2, SerialNumber=3
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx kernel: [11758.504817] usb 1-7.1: Product: USB Single Serial
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx kernel: [11758.504820] usb 1-7.1: SerialNumber: 5735013554
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx mtp-probe: checking bus 1, device 7: "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7.1"
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx mtp-probe: bus: 1, device: 7 was not an MTP device
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx kernel: [11758.557155] cdc_acm 1-7.1:1.0: ttyACM0: USB ACM device
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx kernel: [11758.557221] usbcore: registered new interface driver cdc_acm
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx kernel: [11758.557226] cdc_acm: USB Abstract Control Model driver for USB modems and ISDN adapters
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx mtp-probe: checking bus 1, device 7: "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7.1"
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx mtp-probe: bus: 1, device: 7 was not an MTP device
+May  9 15:22:03 joebloggs-OMEN-25L-Desktop-GT12-0xxx snapd[955]: hotplug.go:200: hotplug device add event ignored, enable experimental.hotplug
+May  9 15:22:06 joebloggs-OMEN-25L-Desktop-GT12-0xxx ModemManager[1001]: <info>  [base-manager] couldn't check support for device '/sys/devices/pci0000:00/0000:00:14.0/usb1/1-7/1-7.1': not supported by any plugin
+```
+
+Rule to add to `/etc/udev/rules.d/50-serial-ports.rules`:
+
+```
+# WCH CH343P
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", \
+    SYMLINK+="ch343p-usb-serial", MODE="0660", TAG+="uaccess"
+
+ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ENV{MTP_NO_PROBE}="1"
+ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3", ENV{ID_MM_DEVICE_IGNORE}="1"
+```
+
+**Notice** the use of `0660`, rather than `0666`, for `MODE` - this makes it read/write only to the ower - `root` - and the group - `dialout`, but then the `TAG+="uaccess"` magic also makes it accessible to the loggen-in user.
+
+You can check this out like so:
+
+```
+$ ls -l /dev/ch343p-usb-serial
+lrwxrwxrwx 1 root root 7 May  9 15:38 /dev/ch343p-usb-serial -> ttyACM0
+$ ls -l /dev/ttyACM0
+crw-rw----+ 1 root dialout 166, 0 May  9 15:38 /dev/ttyACM0
+$ getfacl /dev/ttyACM0
+getfacl: Removing leading '/' from absolute path names
+# file: dev/ttyACM0
+# owner: root
+# group: dialout
+user::rw-
+user:joebloggs:rw-
+group::rw-
+mask::rw-
+other::---
+```
+
+The `+` shown for `/dev/ttyACM0` means there's additional ACL information associated with file and `getfacl` then shows that, among other things, these mean that the logged in user - `joebloggs` - can read and write the file.
+
+This is the modern way to do things and comes from the Arch Linux wiki section on ["allowing regular users to use devices"](https://wiki.archlinux.org/title/udev#Allowing_regular_users_to_use_devices).
