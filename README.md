@@ -883,7 +883,16 @@ In practice, I never hit any exceptions with this code.
 
 The final script, in this section, is [`dev/usb_uart0_demo_buffered.py`](dev/usb_uart0_demo_buffered.py), where I experimented with caching object references (see optimization notes elsewhere in this document) and buffering the read bytes so that more than one could be written out per `write` call. These changes did **not** improve performance.
 
----
+Super Mini
+----------
+
+| Wired up | With heat-shrink | Connected |
+|----------|------------------|-----------|
+| ![wired up](images/hw-serial/soldered.jpg) | ![with heat-shrink](images/hw-serial/heatshrink.jpg) | ![connected](images/hw-serial/uart-to-serial.jpg) |
+
+I used the 2-pin variant of the [USB-C male connector](https://www.aliexpress.com/item/1005006524733310.html) sold by Toao on AliExpress and the [12mm heat-shrink](https://www.aliexpress.com/item/1005001371270910.html) sold by CTHD on AliExpress.
+
+After soldering the power pin to the USB connector, I wrapped it with a little electrical tape, to create a slight buldge that'd be easier to grip when unplugging the connector, and then covered that with heat-shrink.
 
 Exposed pins
 ------------
